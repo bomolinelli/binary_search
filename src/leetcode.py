@@ -30,6 +30,17 @@ def find_smallest_positive(xs):
     >>> find_smallest_positive([-3, -2, -1]) is None
     True
     '''
+    def step(lo, hi):
+        if lo == hi:
+            if lo == len(xs):
+                return None
+            return lo
+        mid = (lo + hi) // 2
+        if xs[mid] > 0:
+            return step(lo, mid)
+        else:
+            return step(mid + 1, hi)
+    return step(0, len(xs))
 
 
 def find_largest_negative(xs, lo=0, hi=None):
@@ -50,6 +61,17 @@ def find_largest_negative(xs, lo=0, hi=None):
     >>> find_largest_negative([-3, -2, -1])
     2
     '''
+    if hi is None:
+        hi = len(xs)
+    if lo == hi:
+        if lo == 0:
+            return None
+        return lo - 1
+    mid = (lo + hi) // 2
+    if xs[mid] < 0:
+        return find_largest_negative(xs, mid + 1, hi)
+    else:
+        return find_largest_negative(xs, lo, mid)
 
 
 def find_smallest(xs, lo=0, hi=None):
@@ -73,6 +95,17 @@ def find_smallest(xs, lo=0, hi=None):
     >>> find_smallest([]) is None
     True
     '''
+    if len(xs) == 0:
+        return None
+    if hi is None:
+        hi = len(xs) - 1
+    if lo == hi:
+        return lo
+    mid = (lo + hi) // 2
+    if xs[mid] < xs[mid + 1]:
+        return find_smallest(xs, lo, mid)
+    else:
+        return find_smallest(xs, mid + 1, hi)
 
 
 def count_repeats(xs, x):
@@ -96,3 +129,15 @@ def count_repeats(xs, x):
     >>> count_repeats([3, 2, 1], 4)
     0
     '''
+    def first_index(is_past, lo, hi):
+        if lo == hi:
+            return lo
+        mid = (lo + hi) // 2
+        if is_past(xs[mid]):
+            return first_index(is_past, lo, mid)
+        else:
+            return first_index(is_past, mid + 1, hi)
+
+    start = first_index(lambda value: value <= x, 0, len(xs))
+    end = first_index(lambda value: value < x, 0, len(xs))
+    return end - start
